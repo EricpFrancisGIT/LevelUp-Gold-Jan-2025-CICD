@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Master Version of EC2 deployment
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      ImageId: ami-0453ec754f44f9a4a
+      InstanceType: t2.micro
+      ImageId: ami-00a929b66ed6e0de6
+      SecurityGroups:
+      - Ref: InstanceSecurityGroup 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "WE HAVE MOVIE SIGN!!" > /var/www/html/index.html
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP Access
+      SecurityGroupIngress;
+      - IpProtocol: tcp 
+        fromPort: 80
+        toPort: 80
+        CidrIP: 0.0.0.0/0
+
+Outputs:
+  InstancePublicIP:
+    Description: Public IP Address of the newly created instance
+    Value: !GetAtt 
+      - MyEC2Instance
+      - PublicIp 
+    Export:
+      -Name: InstnacePublicIp
