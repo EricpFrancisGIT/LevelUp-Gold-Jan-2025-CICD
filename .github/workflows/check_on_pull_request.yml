@@ -1,0 +1,19 @@
+name: Health Check
+
+on:
+    pull_request:
+
+jobs:
+    health-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Performing Health Check
+              run: |
+                STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" http://34.227.59.81/)
+                echo "http Status Code: $STATUS_CODE"
+                if [ "$STATUS_CODE" -ne 200 ]; then
+                    echo "Health Check Failed!!!"
+                    exit 1
+                fi
+                echo "Health Check Success" 
